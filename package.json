@@ -1,0 +1,36 @@
+{
+  "name": "microblocks",
+  "version": "2.0.0",
+  "main": "main.js",
+  "build": {
+    "appId": "com.example.myapp",
+    "productName": "MicroBlocks",
+    "win": {
+      "target": "portable"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "cert.pem",
+      "key.pem",
+      "mb-webapp/**/*"
+    ],
+    "icon": "mb-webapp/mb_512"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "electron": "^37.2.4",
+    "electron-builder": "^26.0.12"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

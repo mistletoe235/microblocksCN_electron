@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+  <title>MicroBlocks</title>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="icons/Bunny512.png">
+  <meta name="theme-color" content="white" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="MicroBlocks">
+  <meta name="msapplication-TileImage" content="icons/Bunny192.png">
+  <meta name="msapplication-TileColor" content="#FFFFFF">
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      overflow: hidden;
+      background: #f9f9f9;
+    }
+
+    .emscripten {
+      padding-right: 0;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+    }
+
+    div.emscripten {
+      text-align: center;
+    }
+
+    canvas.emscripten {
+      border: 0px none;
+      margin-left: 0px;
+      margin-top: -18px
+    }
+
+    .spinner {
+      height: 30px;
+      width: 30px;
+      margin-top: 5px;
+      margin-left: 20px;
+      display: inline-block;
+      vertical-align: top;
+      animation: rotation 0.8s linear infinite;
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-top: 4px solid #4ca8af;
+      border-radius: 50%;
+    }
+
+    @keyframes rotation {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    #status {
+      display: inline-block;
+      vertical-align: top;
+      margin-left: 15px;
+      font-weight: bold;
+      color: rgb(100, 100, 100);
+    }
+
+    #progress {
+      height: 20px;
+      width: 30px;
+    }
+
+    #controls {
+      display: inline-block;
+      float: left;
+      margin-top: 5px;
+      margin-bottom: 7px;
+      margin-left: 5px;
+    }
+
+    #output {
+      width: 100%;
+      height: 200px;
+      margin-top: 10px;
+      background-color: black;
+      color: white;
+      font-family: 'Lucida Console', Monaco, monospace;
+      outline: none;
+    }
+
+    /* 弹窗背景 */
+    #bluetooth-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    /* 弹窗内容 */
+    #bluetooth-popup-content {
+      background: #fff;
+      padding: 20px 25px;
+      border-radius: 12px;
+      text-align: center;
+      width: 320px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    #bluetooth-popup-content h2 {
+      margin-top: 0;
+      font-size: 20px;
+      color: #333;
+    }
+
+    #bluetooth-device-list {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    #bluetooth-device-list li {
+      cursor: pointer;
+      padding: 10px;
+      border: 1px solid #ddd;
+      margin: 6px 0;
+      border-radius: 6px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    #bluetooth-device-list li:hover {
+      background-color: #f5f5f5;
+      transform: translateY(-2px);
+    }
+
+    #cancel-bluetooth {
+      background: #f44336;
+      color: #fff;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.3s;
+    }
+
+    #cancel-bluetooth:hover {
+      background: #d32f2f;
+    }
+
+    /* 刷新动画 */
+    .loading-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .loading-indicator .spinner {
+      width: 18px;
+      height: 18px;
+      margin: 0 8px 0 0;
+      border-width: 3px;
+    }
+  </style>
+
+  <style>
+    #serial-popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    #serial-popup-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      width: 300px;
+    }
+
+    #serial-device-list {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    #serial-device-list li {
+      cursor: pointer;
+      padding: 10px;
+      border: 1px solid #ddd;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+
+    #serial-device-list li:hover {
+      background-color: #f0f0f0;
+    }
+
+    #cancel-serial {
+      background: #f44336;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    /* 刷新动画 */
+    .loading-indicator-serial {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .loading-indicator-serial .spinner {
+      width: 18px;
+      height: 18px;
+      margin: 0 8px 0 0;
+      border-width: 3px;
+    }
+  </style>
+
+</head>
+
+<body>
+  <script>
+    if (location.protocol === 'http:') { location.protocol = 'https:'; }
+  </script>
+
+  <span id='controls' style="display: none">
+    <input type="button" value="Keyboard" id="KeyboardButton">
+    <input type="button" value="Backspace" id="BackspaceButton">
+    <input type="button" value="Toggle Fullscreen" id="FullscreenButton">
+    <input type="button" value="Upload" id="UploadButton">
+    <input type="button" value="Enable Microphone" id="EnableMicrophoneButton">
+    <input type="button" value="See Inside" id="SeeInsideButton">
+    <input type="button" value="Present" id="PresentButton">
+    <input type="button" value="Go" id="GoButton">
+    <input type="button" value="Stop" id="StopButton">
+    <input type="file" id="FileUploader" multiple style="display:none">
+  </span>
+
+  <div class="spinner" id='spinner'></div>
+  <div class="emscripten" id="status">Downloading...</div>
+
+  <div class="emscripten">
+    <progress value="0" max="100" id="progress" hidden=1></progress>
+  </div>
+
+  <div class="emscripten">
+    <canvas class="emscripten" id="canvas" width="100px" height="100px"></canvas>
+  </div>
+
+  <!-- 蓝牙设备选择弹窗 -->
+  <div id="bluetooth-popup">
+    <div id="bluetooth-popup-content">
+      <h2>选择蓝牙设备</h2>
+      <div class="loading-indicator" id="loading-indicator" style="display: none;">
+        <div class="spinner"></div> 正在搜索设备...
+      </div>
+      <ul id="bluetooth-device-list"></ul>
+      <button id="cancel-bluetooth">取消</button>
+    </div>
+  </div>
+  <!-- usb 串口弹窗 -->
+  <div id="serial-popup">
+    <div id="serial-popup-content">
+      <h3>选择串口设备</h3>
+      <div class="loading-indicator-serial" id="loading-indicator-serial" style="display: none;">
+        <div class="spinner"></div> 正在搜索设备...
+      </div>
+      <ul id="serial-device-list"></ul>
+      <button id="cancel-serial">取消</button>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="emModule.js"></script>
+  <script type="text/javascript" src="gpSupport.js"></script>
+  <script type="text/javascript" src="microblocksCN.js"></script>
+  <script type="text/javascript" src="FileSaver.js"></script>
+  <script type="text/javascript" src="gp_wasm.js?version=2-0-49-5"></script>
+
+  <script>
+    const popup = document.getElementById('bluetooth-popup');
+    const deviceListElement = document.getElementById('bluetooth-device-list');
+    const cancelButton = document.getElementById('cancel-bluetooth');
+    const loadingIndicator = document.getElementById('loading-indicator');
+
+    // 显示蓝牙设备弹窗
+    deviceListElement.innerHTML = '';
+    window.electronAPI.showBluetoothDevices((event, deviceList) => {
+
+      loadingIndicator.style.display = 'flex'; // 显示加载动画
+
+
+      //   loadingIndicator.style.display = 'none';
+
+      deviceList.forEach((device) => {
+        const listItem = document.createElement('li');
+        listItem.textContent = device.deviceName || '未知设备';
+        listItem.addEventListener('click', () => {
+          window.electronAPI.selectBluetoothDevice(device.deviceId);
+          popup.style.display = 'none';
+          deviceListElement.innerHTML = ''
+        });
+        // 判断设备是否已经在列表中，避免重复添加
+        if (![...deviceListElement.children].some(li => li.textContent === listItem.textContent) && device.deviceName.startsWith('MicroBlocks')) {
+          deviceListElement.appendChild(listItem);
+        }
+      });
+
+      popup.style.display = 'flex';
+    });
+
+    cancelButton.addEventListener('click', () => {
+      popup.style.display = 'none';
+      window.electronAPI.selectBluetoothDevice('');
+      deviceListElement.innerHTML = '';
+    });
+  </script>
+  <script>
+    const serial_popup = document.getElementById('serial-popup');
+    const serial_deviceListElement = document.getElementById('serial-device-list');
+    const serial_cancelButton = document.getElementById('cancel-serial');
+    const serial_loadingIndicator = document.getElementById('loading-indicator-serial');
+
+    // 显示串口设备弹窗
+    window.electronAPI.showSerialDevices((event, portList) => {    
+      // serial_loadingIndicator.style.display = 'flex'; // 显示加载动画
+      portList.forEach((port) => {
+        const listItem = document.createElement('li');
+        listItem.textContent = port.displayName + ' (' + port.portName +')' || '未知设备';
+        listItem.addEventListener('click', () => {
+          window.electronAPI.selectSerialDevice(port.portId);
+          serial_popup.style.display = 'none';
+          serial_deviceListElement.innerHTML = '';
+        });
+        serial_deviceListElement.appendChild(listItem);
+      });
+      serial_popup.style.display = 'flex';
+    });
+
+    // 取消选择
+    serial_cancelButton.addEventListener('click', () => {
+      serial_deviceListElement.innerHTML = '';
+      serial_popup.style.display = 'none';
+      window.electronAPI.cancelSerialRequest();
+    });
+  </script>
+</body>
+
+</html>
