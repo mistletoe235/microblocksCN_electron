@@ -96,7 +96,7 @@
       outline: none;
     }
 
-    /* 弹窗背景 */
+    /* Bluetooth popup background */
     #bluetooth-popup {
       position: fixed;
       top: 0;
@@ -110,7 +110,7 @@
       z-index: 9999;
     }
 
-    /* 弹窗内容 */
+    /* Bluetooth popup content */
     #bluetooth-popup-content {
       background: #fff;
       padding: 20px 25px;
@@ -176,7 +176,7 @@
       background: #d32f2f;
     }
 
-    /* 刷新动画 */
+    /* Refresh animation */
     .loading-indicator {
       display: flex;
       align-items: center;
@@ -244,7 +244,7 @@
       border-radius: 5px;
       cursor: pointer;
     }
-    /* 刷新动画 */
+
     .loading-indicator-serial {
       display: flex;
       align-items: center;
@@ -293,26 +293,26 @@
     <canvas class="emscripten" id="canvas" width="100px" height="100px"></canvas>
   </div>
 
-  <!-- 蓝牙设备选择弹窗 -->
+  <!-- Bluetooth device selection popup -->
   <div id="bluetooth-popup">
     <div id="bluetooth-popup-content">
-      <h2>选择蓝牙设备</h2>
+      <h2>Select Bluetooth Device</h2>
       <div class="loading-indicator" id="loading-indicator" style="display: none;">
-        <div class="spinner"></div> 正在搜索设备...
+        <div class="spinner"></div> Searching for devices...
       </div>
       <ul id="bluetooth-device-list"></ul>
-      <button id="cancel-bluetooth">取消</button>
+      <button id="cancel-bluetooth">Cancel</button>
     </div>
   </div>
-  <!-- usb 串口弹窗 -->
+  <!-- USB serial device popup -->
   <div id="serial-popup">
     <div id="serial-popup-content">
-      <h3>选择串口设备</h3>
+      <h3>Select Serial Device</h3>
       <div class="loading-indicator-serial" id="loading-indicator-serial" style="display: none;">
-        <div class="spinner"></div> 正在搜索设备...
+        <div class="spinner"></div> Searching for devices...
       </div>
       <ul id="serial-device-list"></ul>
-      <button id="cancel-serial">取消</button>
+      <button id="cancel-serial">Cancel</button>
     </div>
   </div>
 
@@ -328,24 +328,21 @@
     const cancelButton = document.getElementById('cancel-bluetooth');
     const loadingIndicator = document.getElementById('loading-indicator');
 
-    // 显示蓝牙设备弹窗
+    // Show Bluetooth device popup
     deviceListElement.innerHTML = '';
     window.electronAPI.showBluetoothDevices((event, deviceList) => {
 
-      loadingIndicator.style.display = 'flex'; // 显示加载动画
-
-
-      //   loadingIndicator.style.display = 'none';
+      loadingIndicator.style.display = 'flex'; // Show loading animation
 
       deviceList.forEach((device) => {
         const listItem = document.createElement('li');
-        listItem.textContent = device.deviceName || '未知设备';
+        listItem.textContent = device.deviceName || 'Unknown Device';
         listItem.addEventListener('click', () => {
           window.electronAPI.selectBluetoothDevice(device.deviceId);
           popup.style.display = 'none';
           deviceListElement.innerHTML = ''
         });
-        // 判断设备是否已经在列表中，避免重复添加
+        // Avoid duplicate devices in the list
         if (![...deviceListElement.children].some(li => li.textContent === listItem.textContent) && device.deviceName.startsWith('MicroBlocks')) {
           deviceListElement.appendChild(listItem);
         }
@@ -366,12 +363,11 @@
     const serial_cancelButton = document.getElementById('cancel-serial');
     const serial_loadingIndicator = document.getElementById('loading-indicator-serial');
 
-    // 显示串口设备弹窗
+    // Show serial device popup
     window.electronAPI.showSerialDevices((event, portList) => {    
-      // serial_loadingIndicator.style.display = 'flex'; // 显示加载动画
       portList.forEach((port) => {
         const listItem = document.createElement('li');
-        listItem.textContent = port.displayName + ' (' + port.portName +')' || '未知设备';
+        listItem.textContent = port.displayName + ' (' + port.portName +')' || 'Unknown Device';
         listItem.addEventListener('click', () => {
           window.electronAPI.selectSerialDevice(port.portId);
           serial_popup.style.display = 'none';
@@ -382,7 +378,7 @@
       serial_popup.style.display = 'flex';
     });
 
-    // 取消选择
+    // Cancel selection
     serial_cancelButton.addEventListener('click', () => {
       serial_deviceListElement.innerHTML = '';
       serial_popup.style.display = 'none';

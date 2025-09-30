@@ -8,6 +8,16 @@
     "win": {
       "target": "portable"
     },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.education",
+      "icon": "mb-webapp/mb_512.icns"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Education",
+      "icon": "mb-webapp/mb_512.png"
+    },
     "files": [
       "main.js",
       "preload.js",
