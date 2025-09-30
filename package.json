@@ -33,7 +33,10 @@
     "build": "electron-builder"
   },
   "keywords": [],
-  "author": "",
+  "author": {
+    "name": "CoCube",
+    "email": "cocubecn@163.com"
+  },
   "license": "ISC",
   "description": "",
   "devDependencies": {
