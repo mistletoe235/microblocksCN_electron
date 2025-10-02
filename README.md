@@ -101,3 +101,14 @@ npm run build -- --linux --arm64
 ```
 
 Once the build is complete, the packaged application will be located in the dist folder in the project's root directory.
+
+
+---
+
+## Check Out Our Product: CoCube Desktop AI Educational Robot
+
+If you find this project helpful, you might love our main product, **CoCube**!
+
+**CoCube** is a desktop-level AI educational robot, jointly developed by Master's and PhD teams from Shanghai Jiao Tong University and Fudan University. It aims to open the door to artificial intelligence for teenagers by creating an interactive, fulfilling, and fun creative platform. CoCube stimulates students' curiosity and creativity by enabling them to design AI robots, from simple programming to building complex interactive systems, helping them turn their ideas and inspiration into reality.
+
+👉 **Visit our [Official Website](https://wiki.cocube.fun/) to learn more!**
