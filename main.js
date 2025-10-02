@@ -129,6 +129,12 @@ function createWindow() {
 }
 
 app.commandLine.appendSwitch('ignore-certificate-errors', 'true');
+// 如果是linux，需要这行
+if (process.platform === 'linux') {
+  // app.commandLine.appendSwitch('no-sandbox');
+  app.commandLine.appendSwitch("enable-experimental-web-platform-features", true);
+}
+
 app.whenReady().then(() => {
   createWindow();
 

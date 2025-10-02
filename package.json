@@ -1,10 +1,10 @@
 {
-  "name": "microblocks",
-  "version": "2.0.0",
+  "name": "MicroBlocksCN",
+  "version": "2.0.64",
   "main": "main.js",
   "build": {
     "appId": "com.example.myapp",
-    "productName": "MicroBlocks",
+    "productName": "MicroBlocksCN",
     "win": {
       "target": "portable"
     },
@@ -14,7 +14,7 @@
       "icon": "mb-webapp/mb_512.icns"
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": ["AppImage", "deb", "rpm"],
       "category": "Education",
       "icon": "mb-webapp/mb_512.png"
     },
